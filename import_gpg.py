@@ -40,7 +40,7 @@ for user in (u for u in users if u["public_gpg_key"]):
     user_dict[user["org_username"].lower()] = user["full_name"].lower().strip()
     user_dict[user["full_name"].lower().strip()] = user["org_username"].lower()
 
-proc = Popen("gpg --import -",
+proc = Popen("gpg --no-default-keyring --keyring=$PWD/git.gpg --import -",
              shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
 stdout, stderr = proc.communicate(big_bytes)
