@@ -63,7 +63,7 @@ proc = Popen("gpg --no-default-keyring --keyring=$PWD/git.gpg --import -",
 
 stdout, stderr = proc.communicate(big_bytes)
 
-print("Encoded: %s" % stdout)
+print("Encoded: %s" % stderr)
 gpg_output = stderr.decode("utf-8")
 print(gpg_output)
 
