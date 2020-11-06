@@ -48,6 +48,11 @@ for user in (u for u in users if u["public_gpg_key"]):
 
     proc = Popen("base64 -d", shell=True, stdin=PIPE, stdout=PIPE)
     stdout, _ = proc.communicate(user["public_gpg_key"].encode("ascii"))
+
+    if proc.returncode > 0:
+        print("Bad GPG key: %s" % user["org_username"])
+        continue
+
     big_bytes += stdout
     gpg_users.add(user["org_username"])
     user_dict[user["org_username"].lower()] = user["full_name"].lower().strip()
