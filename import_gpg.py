@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import re
+import os
 import json
 import sys
 from graphqlclient import GraphQLClient
@@ -15,7 +16,8 @@ query = """{
   }
 }"""
 
-client = GraphQLClient("http://localhost:4000/graphql")
+client = GraphQLClient(os.getenv("QONTRACT_BASE_URL"))
+client.inject_token(os.getenv("QONTRACT_TOKEN"))
 users = json.loads(client.execute(query))["data"]["users"]
 
 gpg_users = set()
