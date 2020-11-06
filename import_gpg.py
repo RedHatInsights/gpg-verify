@@ -33,7 +33,7 @@ if os.getenv("QONTRACT_TOKEN"):
 else:
     username = os.getenv("APP_INTERFACE_USERNAME")
     password = os.getenv("APP_INTERFACE_PASSWORD")
-    basic_auth = base64.b64encode(f"{username}:{password}")
+    basic_auth = base64.b64encode(bytes(f"{username}:{password}", "ascii"))
     client.inject_token(f"Basic {basic_auth}")
 
 users = json.loads(client.execute(query))["data"]["users"]
