@@ -26,6 +26,8 @@ QONTRACT_BASE_URL = os.getenv(
     f"https://{APP_INTERFACE_BASE_URL}/graphql" if APP_INTERFACE_BASE_URL else DEFAULT_URL,
 )
 
+print("which gpg: %s" % check_output("which gpg", shell=True).decode("ascii"))
+
 client = GraphQLClient(QONTRACT_BASE_URL)
 
 if os.getenv("QONTRACT_TOKEN"):
