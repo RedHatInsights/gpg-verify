@@ -57,7 +57,8 @@ def extract_user(line):
         return
 
     user_id = line.split('"')[1]
-    if match := re.search(pattern, user_id, re.IGNORECASE):
+    match = re.search(pattern, user_id, re.IGNORECASE)
+    if match:
         first_name = match.group(1)
         last_name = match.group(2)
         email = match.group(4)
