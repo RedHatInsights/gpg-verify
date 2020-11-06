@@ -4,6 +4,7 @@ import re
 import os
 import json
 import sys
+import base64
 from graphqlclient import GraphQLClient
 from subprocess import Popen, PIPE, check_output
 
@@ -29,6 +30,11 @@ client = GraphQLClient(QONTRACT_BASE_URL)
 
 if os.getenv("QONTRACT_TOKEN"):
     client.inject_token(os.getenv("QONTRACT_TOKEN"))
+else:
+    username = os.getenv("APP_INTERFACE_USERNAME")
+    password = os.getenv("APP_INTERFACE_PASSWORD")
+    basic_auth = base64.b64encode(f"{username}:{password}")
+    client.inject_token(f"Basic {basic_auth}")
 
 users = json.loads(client.execute(query))["data"]["users"]
 
