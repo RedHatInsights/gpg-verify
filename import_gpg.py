@@ -16,8 +16,13 @@ query = """{
   }
 }"""
 
-client = GraphQLClient(os.getenv("QONTRACT_BASE_URL"))
-client.inject_token(os.getenv("QONTRACT_TOKEN"))
+DEFAULT_URL = "http://localhost:4000/graphql"
+
+client = GraphQLClient(os.getenv("QONTRACT_BASE_URL", DEFAULT_URL))
+
+if os.getenv("QONTRACT_TOKEN"):
+    client.inject_token(os.getenv("QONTRACT_TOKEN"))
+
 users = json.loads(client.execute(query))["data"]["users"]
 
 gpg_users = set()
