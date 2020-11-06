@@ -18,6 +18,8 @@ query = """{
 
 DEFAULT_URL = "http://localhost:4000/graphql"
 
+print(os.getenv("QONTRACT_BASE_URL"))
+
 client = GraphQLClient(os.getenv("QONTRACT_BASE_URL", DEFAULT_URL))
 
 if os.getenv("QONTRACT_TOKEN"):
