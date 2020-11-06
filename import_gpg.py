@@ -18,9 +18,14 @@ query = """{
 
 DEFAULT_URL = "http://localhost:4000/graphql"
 
-print(os.getenv("QONTRACT_BASE_URL"))
+APP_INTERFACE_BASE_URL = os.getenv("APP_INTERFACE_BASE_URL")
 
-client = GraphQLClient(os.getenv("QONTRACT_BASE_URL", DEFAULT_URL))
+QONTRACT_BASE_URL = os.getenv(
+    "QONTRACT_BASE_URL",
+    f"https://{APP_INTERFACE_BASE_URL}/graphql" if APP_INTERFACE_BASE_URL else DEFAULT_URL,
+)
+
+client = GraphQLClient(QONTRACT_BASE_URL)
 
 if os.getenv("QONTRACT_TOKEN"):
     client.inject_token(os.getenv("QONTRACT_TOKEN"))
