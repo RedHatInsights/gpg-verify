@@ -46,7 +46,7 @@ for user in (u for u in users if u["public_gpg_key"]):
     if user["org_username"] == "jmoshenk":
         continue
 
-    proc = Popen("base64 -d", shell=True, stdin=PIPE, stdout=PIPE)
+    proc = Popen("base64 -d", shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     stdout, _ = proc.communicate(user["public_gpg_key"].encode("ascii"))
 
     if proc.returncode > 0:
@@ -63,7 +63,6 @@ proc = Popen("gpg --no-default-keyring --keyring=$PWD/git.gpg --import -",
 
 stdout, stderr = proc.communicate(big_bytes)
 
-print("Encoded: %s" % stderr)
 gpg_output = stderr.decode("utf-8", errors="ignore")
 print(gpg_output)
 
