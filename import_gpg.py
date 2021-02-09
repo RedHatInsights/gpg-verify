@@ -45,6 +45,8 @@ big_bytes = b''
 for user in (u for u in users if u["public_gpg_key"]):
     if user["org_username"] == "jmoshenk":
         continue
+    if user["org_username"] == "rzaleski":
+        continue
 
     proc = Popen("base64 -d", shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     stdout, _ = proc.communicate(user["public_gpg_key"].encode("ascii"))
