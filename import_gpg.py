@@ -42,30 +42,46 @@ gpg_users = set()
 user_dict = {}
 big_bytes = b''
 
+big_gpg_output = ""
+
 for user in (u for u in users if u["public_gpg_key"]):
     if user["org_username"] == "jmoshenk":
         continue
 
     proc = Popen("base64 -d", shell=True, stdin=PIPE, stdout=PIPE)
     stdout, _ = proc.communicate(user["public_gpg_key"].encode("ascii"))
-
+    
     if proc.returncode > 0:
         print("Bad GPG key: %s" % user["org_username"])
         continue
 
-    big_bytes += stdout
+    big_bytes = stdout
+
+    proc = Popen("gpg --no-default-keyring --keyring=$PWD/git.gpg --import -",
+             shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+
+    stdout, stderr = proc.communicate(big_bytes)
+
+    if proc.returncode > 0:
+        import pdb; pdb.set_trace()
+        continue
+
+    print("Encoded: %s" % stderr)
+    big_gpg_output += stderr.decode("utf-8", errors="ignore")
+    # print(gpg_output)
+
     gpg_users.add(user["org_username"])
     user_dict[user["org_username"].lower()] = user["full_name"].lower().strip()
     user_dict[user["full_name"].lower().strip()] = user["org_username"].lower()
 
-proc = Popen("gpg --no-default-keyring --keyring=$PWD/git.gpg --import -",
-             shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+# proc = Popen("gpg --no-default-keyring --keyring=$PWD/git.gpg --import -",
+#              shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
-stdout, stderr = proc.communicate(big_bytes)
+# stdout, stderr = proc.communicate(big_bytes)
 
-print("Encoded: %s" % stderr)
-gpg_output = stderr.decode("utf-8", errors="ignore")
-print(gpg_output)
+# print("Encoded: %s" % stderr)
+# gpg_output = stderr.decode("utf-8", errors="ignore")
+# print(gpg_output)
 
 confirmed_users = set()
 orphaned_users = set()
@@ -99,7 +115,7 @@ def extract_user(line):
             orphaned_users.add(user_id)
 
 
-for line in gpg_output.splitlines():
+for line in big_gpg_output.splitlines():
     extract_user(line) 
 
 missing_users = gpg_users - confirmed_users
