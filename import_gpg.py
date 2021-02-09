@@ -65,7 +65,7 @@ for user in (u for u in users if u["public_gpg_key"]):
     stdout, stderr = proc.communicate(big_bytes)
 
     if proc.returncode > 0:
-        import pdb; pdb.set_trace()
+        print("Bad time with key: %s" % user["org_username"])
         continue
 
     print("Encoded: %s" % stderr)
