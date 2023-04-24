@@ -8,6 +8,33 @@ from subprocess import PIPE, Popen
 
 from graphqlclient import GraphQLClient
 
+def extract_user(line):
+    if '"' not in line:
+        return
+
+    user_id = line.split('"')[1]
+    match = re.search(pattern, user_id, re.IGNORECASE)
+    if match:
+        first_name = match.group(1)
+        last_name = match.group(2)
+        email = match.group(4)
+
+        org_id = email.split("@")[0]
+
+        if last_name:
+            full_name = " ".join([first_name, last_name])
+        else:
+            full_name = first_name
+
+        full_name = full_name.strip().lower()
+
+        if org_id.lower() in user_dict:
+            confirmed_users.add(org_id)
+        elif full_name in user_dict:
+            confirmed_users.add(user_dict[full_name])
+        else:
+            orphaned_users.add(user_id)
+
 query = """{
   users: users_v1 {
     public_gpg_key
@@ -44,7 +71,6 @@ users = json.loads(client.execute(query))["data"]["users"]
 gpg_users = set()
 user_dict = {}
 big_bytes = b""
-
 big_gpg_output = ""
 
 for user in (u for u in users if u["public_gpg_key"]):
@@ -78,53 +104,14 @@ for user in (u for u in users if u["public_gpg_key"]):
 
     print("Encoded: %s" % stderr)
     big_gpg_output += stderr.decode("utf-8", errors="ignore")
-    # print(gpg_output)
 
     gpg_users.add(user["org_username"])
     user_dict[user["org_username"].lower()] = user["full_name"].lower().strip()
     user_dict[user["full_name"].lower().strip()] = user["org_username"].lower()
 
-# proc = Popen("gpg --no-default-keyring --keyring=$PWD/git.gpg --import -",
-#              shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-
-# stdout, stderr = proc.communicate(big_bytes)
-
-# print("Encoded: %s" % stderr)
-# gpg_output = stderr.decode("utf-8", errors="ignore")
-# print(gpg_output)
-
 confirmed_users = set()
 orphaned_users = set()
 pattern = r"(\w+) (\w+ )?(\(.*\) )?<(.*)>"
-
-
-def extract_user(line):
-    if '"' not in line:
-        return
-
-    user_id = line.split('"')[1]
-    match = re.search(pattern, user_id, re.IGNORECASE)
-    if match:
-        first_name = match.group(1)
-        last_name = match.group(2)
-        email = match.group(4)
-
-        org_id = email.split("@")[0]
-
-        if last_name:
-            full_name = " ".join([first_name, last_name])
-        else:
-            full_name = first_name
-
-        full_name = full_name.strip().lower()
-
-        if org_id.lower() in user_dict:
-            confirmed_users.add(org_id)
-        elif full_name in user_dict:
-            confirmed_users.add(user_dict[full_name])
-        else:
-            orphaned_users.add(user_id)
-
 
 for line in big_gpg_output.splitlines():
     extract_user(line)
