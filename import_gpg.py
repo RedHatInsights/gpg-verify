@@ -8,6 +8,7 @@ from subprocess import PIPE, Popen
 
 from graphqlclient import GraphQLClient
 
+
 def extract_user(line):
     if '"' not in line:
         return
@@ -34,6 +35,7 @@ def extract_user(line):
             confirmed_users.add(user_dict[full_name])
         else:
             orphaned_users.add(user_id)
+
 
 query = """{
   users: users_v1 {
