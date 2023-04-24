@@ -6,6 +6,7 @@ import os
 import re
 from subprocess import PIPE, Popen
 
+import requests
 from graphqlclient import GraphQLClient
 
 
@@ -35,6 +36,16 @@ def extract_user(line):
             confirmed_users.add(user_dict[full_name])
         else:
             orphaned_users.add(user_id)
+
+
+def get_github_actions_user():
+    github_actions_user = {}
+    github_actions_user["org_username"] = "Github"
+    github_actions_user["full_name"] = "GitHub"
+    github_actions_user["public_gpg_key"] = base64.b64encode(
+        requests.get("https://github.com/web-flow.gpg").text.encode("ascii")
+    ).decode()
+    return github_actions_user
 
 
 query = """{
@@ -74,6 +85,9 @@ gpg_users = set()
 user_dict = {}
 big_bytes = b""
 big_gpg_output = ""
+
+github_actions_user = get_github_actions_user()
+users.append(github_actions_user)
 
 for user in (u for u in users if u["public_gpg_key"]):
     if user["org_username"] == "jmoshenk":

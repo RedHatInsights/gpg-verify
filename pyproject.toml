@@ -11,7 +11,7 @@ authors = [
     { name = "Kyle Lape", email = "klape@redhat.com" }
 ]
 dependencies = [
-    "graphqlclient",
+    "graphqlclient", "requests"
 ]
 
 [project.optional-dependencies]
