@@ -1,0 +1,36 @@
+exclude: '^$'
+fail_fast: false
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-toml
+      - id: trailing-whitespace
+      - id: check-ast
+  - repo: local
+    hooks:
+      - id: black
+        name: black
+        entry: black
+        language: system
+        types: [ python ]
+      - id: isort
+        name: isort
+        entry: isort
+        language: system
+        types: [ python ]
+        exclude: '.*/migrations/.*'
+        args: [
+            '--line-length=110',
+            '--multi-line=3',
+            '--force-grid-wrap=0',
+            '--trailing-comma',
+            '--use-parentheses',
+            '--ensure-newline-before-comments',
+        ]
+      - id: flake8
+        name: flake8
+        entry: flake8
+        language: system
+        types: [ python ]
+        args: [--max-line-length, "100"]

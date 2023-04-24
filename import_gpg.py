@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
-import re
-import os
-import json
-import sys
 import base64
-from graphqlclient import GraphQLClient
-from subprocess import Popen, PIPE, check_output
+import json
+import os
+import re
+from subprocess import PIPE, Popen
 
+from graphqlclient import GraphQLClient
 
 query = """{
   users: users_v1 {
@@ -23,7 +22,9 @@ APP_INTERFACE_BASE_URL = os.getenv("APP_INTERFACE_BASE_URL")
 
 QONTRACT_BASE_URL = os.getenv(
     "QONTRACT_BASE_URL",
-    f"https://{APP_INTERFACE_BASE_URL}/graphql" if APP_INTERFACE_BASE_URL else DEFAULT_URL,
+    f"https://{APP_INTERFACE_BASE_URL}/graphql"
+    if APP_INTERFACE_BASE_URL
+    else DEFAULT_URL,
 )
 
 client = GraphQLClient(QONTRACT_BASE_URL)
@@ -33,14 +34,16 @@ if os.getenv("QONTRACT_TOKEN"):
 else:
     username = os.getenv("APP_INTERFACE_USERNAME")
     password = os.getenv("APP_INTERFACE_PASSWORD")
-    basic_auth = base64.b64encode(f"{username}:{password}".encode("utf-8")).decode("ascii")
+    basic_auth = base64.b64encode(f"{username}:{password}".encode("utf-8")).decode(
+        "ascii"
+    )
     client.inject_token(f"Basic {basic_auth}")
 
 users = json.loads(client.execute(query))["data"]["users"]
 
 gpg_users = set()
 user_dict = {}
-big_bytes = b''
+big_bytes = b""
 
 big_gpg_output = ""
 
@@ -52,15 +55,20 @@ for user in (u for u in users if u["public_gpg_key"]):
 
     proc = Popen("base64 -d", shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     stdout, _ = proc.communicate(user["public_gpg_key"].encode("ascii"))
-    
+
     if proc.returncode > 0:
         print("Bad GPG key: %s" % user["org_username"])
         continue
 
     big_bytes = stdout
 
-    proc = Popen("gpg --no-default-keyring --keyring=$PWD/git.gpg --import -",
-             shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    proc = Popen(
+        "gpg --no-default-keyring --keyring=$PWD/git.gpg --import -",
+        shell=True,
+        stdin=PIPE,
+        stdout=PIPE,
+        stderr=PIPE,
+    )
 
     stdout, stderr = proc.communicate(big_bytes)
 
@@ -88,6 +96,7 @@ for user in (u for u in users if u["public_gpg_key"]):
 confirmed_users = set()
 orphaned_users = set()
 pattern = r"(\w+) (\w+ )?(\(.*\) )?<(.*)>"
+
 
 def extract_user(line):
     if '"' not in line:
@@ -118,7 +127,7 @@ def extract_user(line):
 
 
 for line in big_gpg_output.splitlines():
-    extract_user(line) 
+    extract_user(line)
 
 missing_users = gpg_users - confirmed_users
 
