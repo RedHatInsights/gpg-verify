@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gpg-verify"
+description = "RedHatInsights gpg-verify script"
+version = "0.1.0"
+authors = [
+    { name = "Pete Savage", email = "psavage@redhat.com" },
+    { name = "Kyle Lape", email = "klape@redhat.com" }
+]
+dependencies = ["graphqlclient"]
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit"
+]
+
