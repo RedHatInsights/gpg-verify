@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-
 import base64
 import json
 import os
 import re
-from subprocess import PIPE, Popen
+from subprocess import PIPE
+from subprocess import Popen
 
 from graphqlclient import GraphQLClient
 
@@ -83,9 +83,7 @@ APP_INTERFACE_BASE_URL = os.getenv("APP_INTERFACE_BASE_URL")
 
 QONTRACT_BASE_URL = os.getenv(
     "QONTRACT_BASE_URL",
-    f"https://{APP_INTERFACE_BASE_URL}/graphql"
-    if APP_INTERFACE_BASE_URL
-    else DEFAULT_URL,
+    f"https://{APP_INTERFACE_BASE_URL}/graphql" if APP_INTERFACE_BASE_URL else DEFAULT_URL,
 )
 
 client = GraphQLClient(QONTRACT_BASE_URL)
@@ -95,9 +93,7 @@ if os.getenv("QONTRACT_TOKEN"):
 else:
     username = os.getenv("APP_INTERFACE_USERNAME")
     password = os.getenv("APP_INTERFACE_PASSWORD")
-    basic_auth = base64.b64encode(f"{username}:{password}".encode("utf-8")).decode(
-        "ascii"
-    )
+    basic_auth = base64.b64encode(f"{username}:{password}".encode("utf-8")).decode("ascii")
     client.inject_token(f"Basic {basic_auth}")
 
 users = json.loads(client.execute(query))["data"]["users"]
