@@ -10,9 +10,7 @@ authors = [
     { name = "Pete Savage", email = "psavage@redhat.com" },
     { name = "Kyle Lape", email = "klape@redhat.com" }
 ]
-dependencies = [
-    "graphqlclient", "requests"
-]
+dependencies = ["graphqlclient"]
 
 [project.optional-dependencies]
 dev = [

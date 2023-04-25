@@ -283,3 +283,5 @@ tags
 [._]*.un~
 
 # End of https://www.toptal.com/developers/gitignore/api/python,vim,pycharm+all
+
+git.gpg

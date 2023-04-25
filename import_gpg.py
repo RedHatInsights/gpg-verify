@@ -6,7 +6,6 @@ import os
 import re
 from subprocess import PIPE, Popen
 
-import requests
 from graphqlclient import GraphQLClient
 
 
@@ -42,10 +41,16 @@ def get_github_actions_user():
     github_actions_user = {}
     github_actions_user["org_username"] = "Github"
     github_actions_user["full_name"] = "GitHub"
-    github_actions_user["public_gpg_key"] = base64.b64encode(
-        requests.get("https://github.com/web-flow.gpg").text.encode("ascii")
-    ).decode()
+    github_actions_user["public_gpg_key"] = _read_local_github_gpg_key_file()
     return github_actions_user
+
+
+def _read_local_github_gpg_key_file():
+    file_path = "github-web-flow.gpg"
+    with open(file_path, "r") as f:
+        file_contents = f.read()
+
+    return base64.b64encode(file_contents.encode("ascii")).decode()
 
 
 query = """{
